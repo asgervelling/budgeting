@@ -28,5 +28,22 @@ Commands:
 
 ### Example
 ```
-
+$ ./run.sh balance 3456.78
+Balance: 3456.78.
+```
+```
+$ ./run.sh goal 80
+Daily goal budget: 80.
+```
+```
+$ ./run.sh budget
+2024-03-01
+Balance: 3456.78.
+Daily budget: 112 (32 more than daily goal budget of 80).
+```
+```
+$ ./run.sh budget --date 15
+2024-03-15
+Balance: 3456.78.
+Daily budget: 203 (123 more than daily goal budget of 80).
 ```

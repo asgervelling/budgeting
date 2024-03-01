@@ -67,7 +67,7 @@ export function setDailyGoal(amount: string): void {
       (error) => console.log(error),
       (goal) => {
         budget.setDailyGoal(goal);
-        console.log(`Set daily goal budget of ${goal}.`);
+        console.log(`Daily goal budget: ${goal}.`);
       }
     )
   );

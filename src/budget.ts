@@ -1,4 +1,4 @@
-import { flow, pipe } from "fp-ts/function";
+import { pipe } from "fp-ts/function";
 import * as E from "fp-ts/Either";
 
 import * as F from "./fileio";
@@ -29,7 +29,7 @@ export function setBalance(balance: number): void {
  * showing their balance.
  */
 export function displayBalance(balance: number) {
-  console.log(`  Set current balance to ${balance}.`);
+  console.log(`Balance: ${balance}.`);
 }
 
 /**
@@ -41,7 +41,7 @@ export function displayBudget(balance: number, dayOfMonth: D.DayOfMonth) {
   const goal = getDailyGoal();
   const overGoal = budget - goal;
   console.log(
-    `  Daily budget: ${budget.toFixed(0)} ` +
+    `Daily budget: ${budget.toFixed(0)} ` +
       `(${overGoal.toFixed(0)} more than ` +
       `daily goal budget of ${goal}).`
   );
@@ -65,58 +65,70 @@ function dailyBudget(balance: number, dayOfMonth: D.DayOfMonth): number {
   return balance / D.daysLeftInMonth(dayOfMonth);
 }
 
-const notEmpty = flow(
-  E.fromPredicate(
-    (s: string) => s !== "",
-    () => "String is empty"
-  )
-);
-
 /**
  * Get the user's daily goal budget from the file system.
  */
 function getDailyGoal(): number {
+  const notEmpty = E.fromPredicate(
+    (s: string) => s !== "",
+    () => `Daily goal budget not set. Set it with \`./run.sh goal <amount>\``
+  );
+  const readGoal = E.tryCatchK(
+    () => F.read(DataFile.DAILY_GOAL).trim(),
+    (error) => `Error reading daily goal budget: ${error}`
+  );
+
   return pipe(
-    E.tryCatch(
-      () => F.read(DataFile.DAILY_GOAL).trim(),
-      (error) => `Error reading daily goal: ${error}`
-    ),
+    readGoal(),
     E.chain(notEmpty),
     E.chain(parse.nonNegative),
     E.getOrElse(() => 0)
   );
 }
 
+const read = (filename: string) => (msg: string) =>
+  E.tryCatchK(
+    () => F.read(filename).trim(),
+    (error) => `${msg}: ${error}`
+  );
+
 /**
  * Get the latest balance as an option.
  */
 export function getLatestBalance(): E.Either<string, number> {
+  const notEmpty = E.fromPredicate(
+    (s: string) => s !== "",
+    () => `Balance not set. Set it with \`./run.sh balance <amount>\``
+  );
+
+  const readBalance = read(DataFile.BALANCE)(
+    `Balance not set. Set it with \`./run.sh balance <amount>\``
+  );
+  // const readBalance = (msg: string) => read(DataFile.BALANCE)
+
+  const x = read(DataFile.BALANCE)("msg");
+
   return pipe(
-    E.tryCatch(
-      () => F.read(DataFile.BALANCE),
-      (error) => `Error reading balance: ${error}`
-    ),
+    readBalance(),
     E.chain(notEmpty),
     E.map((text) => text.trim().split("\n")),
-    E.chain(
-      E.fromPredicate(
-        (lines) => lines.length > 0,
-        () => `Balance not set. Set it with \`./run.sh balance <amount>\``
-      )
-    ),
-    E.map((lines) => {
-      console.log(lines);
-      return lines;
-    }),
     E.map((lines) => lines[lines.length - 1]),
-    E.map((lastLine) => lastLine.split(":")),
     E.chain(
       E.fromPredicate(
-        (parts) => parts.length > 0,
+        (line) => isValidFormat(line),
         () => "Malformed balance. Should be `YYYY-MM-DD: <float>`"
       )
     ),
+    E.map((lastLine) => lastLine.split(":")),
     E.map((parts) => parts[1]),
     E.chain(parse.nonNegative)
   );
+}
+
+/**
+ * Check if `balanceLine` matches the format: `YYYY-MM-DD: <float>`
+ */
+function isValidFormat(balanceLine: string): boolean {
+  const regex = /^\d{4}-\d{2}-\d{2}: (\d+(?:\.\d+)?)$/;
+  return regex.test(balanceLine);
 }
