@@ -1,14 +1,10 @@
-import {
-  appendFileSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  writeFileSync,
-} from "fs";
+import { readFile, writeFile } from "./fileio";
+import * as D from "./dates";
 
-const DIR = "./data";
-const BALANCE_PATH = `${DIR}/balance`;
-const GOAL_PATH = `${DIR}/goal`;
+enum DataFile {
+  GOAL = "goal",
+  BALANCE = "balance",
+}
 
 /**
  * Save your current balance in the balance file. \
@@ -16,32 +12,24 @@ const GOAL_PATH = `${DIR}/goal`;
  * @param balance A natural number.
  */
 export function setBalance(balance: number): void {
-  const line = `${today()}: ${balance}\n`;
-  mkdirIfNotExists(DIR);
-  appendFileSync(BALANCE_PATH, line);
-}
-
-function mkdirIfNotExists(dir: string): void {
-  if (!existsSync(dir)) {
-    mkdirSync(dir);
-  }
+  const line = `${D.today()}: ${balance}\n`;
+  writeFile(DataFile.BALANCE, line);
 }
 
 /**
  * Display a friendly message to the user \
  * showing their balance.
  */
-export function displayBalance() {
-  const balance = getLatestBalance();
-  if (balance) {
+export function displayBalance(balance: number) {
+    if (balance) {
     console.log(`Your balance is ${balance}.`);
   } else {
     console.log(`You have not entered a balance.`);
   }
 }
 
-export function displayBudget() {
-  const budget = dailyBudget();
+export function displayBudget(balance: number) {
+  const budget = dailyBudget(balance);
   const overGoal = budget - getDailyGoal();
   console.log(
     `Daily budget: ${budget.toFixed(0)} (${overGoal.toFixed(0)} over)`
@@ -49,19 +37,30 @@ export function displayBudget() {
 }
 
 /**
+ * Simulate using the program at the n'th of the month.
+ */
+// export function simulateDate(n: number) {
+//   const budget 
+// }
+
+/**
  * Set the daily goal budget.
  */
 export function setDailyGoal(budget: number) {
-  mkdirIfNotExists(DIR);
-  writeFileSync(GOAL_PATH, `${budget}`);
+  writeFile(DataFile.GOAL, `${budget}`);
+}
+
+function dailyBudget(balance: number): number {
+  if (!balance) return 0;
+  else return balance / D.daysLeftInMonth();
 }
 
 /**
  * Get the user's daily goal budget from the file system.
  */
-export function getDailyGoal(): number {
+function getDailyGoal(): number {
   try {
-    const text = readFile(GOAL_PATH).trim();
+    const text = readFile(DataFile.GOAL).trim();
     return Number(text);
   } catch (error) {
     console.log(error);
@@ -73,7 +72,7 @@ export function getDailyGoal(): number {
  * Get the latest balance as an option.
  */
 export function getLatestBalance(): number | null {
-  const text = readFile(BALANCE_PATH);
+  const text = readFile(DataFile.BALANCE);
   const lines = text.trim().split("\n");
   const lastLine = lines[lines.length - 1];
   if (!lastLine) return null;
@@ -82,42 +81,4 @@ export function getLatestBalance(): number | null {
   const balance = parseFloat(balanceStr);
   if (isNaN(balance)) return null;
   else return balance;
-}
-
-/**
- * Read file and create if not exists.
- */
-function readFile(path: string) {
-  try {
-    return readFileSync(path, "utf-8");
-  } catch (error) {
-    writeFileSync(path, "");
-    return readFileSync(path, "utf-8");
-  }
-}
-
-/**
- * The current date as string.
- */
-export function today(): string {
-  return new Date().toISOString().split("T")[0];
-}
-
-export function dailyBudget(): number {
-  const balance = getLatestBalance();
-  if (!balance) return 0;
-  else return balance / daysLeftInMonth();
-}
-
-function daysInThisMonth() {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-}
-
-/**
- * Get the number of days left in the month,
- * including today.
- */
-function daysLeftInMonth() {
-  return daysInThisMonth() - new Date().getDate() + 1;
 }

@@ -1,13 +1,10 @@
 import { Command } from "commander";
 import {
-  dailyBudget,
   displayBalance,
   displayBudget,
-  getDailyGoal,
   getLatestBalance,
   setBalance,
   setDailyGoal,
-  today,
 } from "./budget";
 
 const program = new Command();
@@ -17,15 +14,19 @@ program
   .description("Enter your current balance")
   .action((amount) => {
     setBalance(amount);
-    displayBalance();
+    const balance = getLatestBalance();
+    if (!balance) return;
+    displayBalance(balance);
   });
 
 program
   .command("today")
   .description("See your budget for today")
   .action(() => {
-    displayBalance();
-    displayBudget();
+    const balance = getLatestBalance();
+    if (!balance) return;
+    displayBalance(balance);
+    displayBudget(balance);
   });
 
 program
@@ -34,5 +35,10 @@ program
   .action((amount) => {
     setDailyGoal(amount);
   });
+
+program
+  .command("date <n>")
+  .description("Simulate using the program at the n'th of the month.")
+  .action((n) => {});
 
 program.parse();
