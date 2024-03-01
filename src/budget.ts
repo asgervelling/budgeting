@@ -1,8 +1,11 @@
-import { readFile, writeFile } from "./fileio";
+import * as F from "./fileio";
 import * as D from "./dates";
 
+/**
+ * Files for storing user state on the file system.
+ */
 enum DataFile {
-  GOAL = "goal",
+  DAILY_GOAL = "goal",
   BALANCE = "balance",
 }
 
@@ -13,7 +16,7 @@ enum DataFile {
  */
 export function setBalance(balance: number): void {
   const line = `${D.today()}: ${balance}\n`;
-  writeFile(DataFile.BALANCE, line);
+  F.append(DataFile.BALANCE, line);
 }
 
 /**
@@ -21,13 +24,13 @@ export function setBalance(balance: number): void {
  * showing their balance.
  */
 export function displayBalance(balance: number) {
-  if (balance) {
-    console.log(`Your balance is ${balance}.`);
-  } else {
-    console.log(`You have not entered a balance.`);
-  }
+  console.log(`Your balance is ${balance}.`);
 }
 
+/**
+ * Display how much you can spend and save,
+ * given your current `balance` and the day of the month. 
+ */
 export function displayBudget(balance: number, dayOfMonth: number) {
   const budget = dailyBudget(balance, dayOfMonth);
   const overGoal = budget - getDailyGoal();
@@ -37,17 +40,10 @@ export function displayBudget(balance: number, dayOfMonth: number) {
 }
 
 /**
- * Simulate using the program at the n'th of the month.
- */
-// export function simulateDate(n: number) {
-//   const budget
-// }
-
-/**
  * Set the daily goal budget.
  */
 export function setDailyGoal(budget: number) {
-  writeFile(DataFile.GOAL, `${budget}`);
+  F.write(DataFile.DAILY_GOAL, `${budget}`);
 }
 
 /**
@@ -61,7 +57,7 @@ function dailyBudget(balance: number, dayOfMonth: number): number {
  */
 function getDailyGoal(): number {
   try {
-    const text = readFile(DataFile.GOAL).trim();
+    const text = F.read(DataFile.DAILY_GOAL).trim();
     return Number(text);
   } catch (error) {
     console.log(error);
@@ -73,7 +69,7 @@ function getDailyGoal(): number {
  * Get the latest balance as an option.
  */
 export function getLatestBalance(): number | null {
-  const text = readFile(DataFile.BALANCE);
+  const text = F.read(DataFile.BALANCE);
   const lines = text.trim().split("\n");
   const lastLine = lines[lines.length - 1];
   if (!lastLine) return null;

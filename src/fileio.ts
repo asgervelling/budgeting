@@ -1,35 +1,47 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import * as fs from "fs";
 
 const DIR = "./data";
 
 /**
  * Read file and create if not exists.
  */
-export function readFile(filename: string): string {
+export function read(filename: string): string {
   mkdirIfNotExists(DIR);
   try {
-    return readFileSync(path(filename), "utf-8");
+    return fs.readFileSync(path(filename), "utf-8");
   } catch (error) {
-    writeFileSync(filename, "");
-    return readFileSync(filename, "utf-8");
+    fs.writeFileSync(filename, "");
+    return fs.readFileSync(filename, "utf-8");
   }
 }
 
 /**
  * Write `data` to the a file.
  */
-export function writeFile(filename: string, data: string): void {
+export function write(filename: string, data: string): void {
   mkdirIfNotExists(DIR);
   try {
-    writeFileSync(path(filename), data);
+    fs.writeFileSync(path(filename), data);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+/**
+ * Append `data` to the a file.
+ */
+export function append(filename: string, data: string): void {
+  mkdirIfNotExists(DIR);
+  try {
+    fs.appendFileSync(path(filename), data);
   } catch (error) {
     console.log(error);
   }
 }
 
 function mkdirIfNotExists(dir: string): void {
-  if (!existsSync(dir)) {
-    mkdirSync(dir);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
   }
 }
 
