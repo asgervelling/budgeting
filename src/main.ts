@@ -12,7 +12,7 @@ program
 program
   .command("budget")
   .description("See your budget for today")
-  .option("-d, --date <date>", "See the budget for day `n` of the month.")
+  .option("-d, --date <date>", "See the budget for the n'th day of the month.")
   .action((options) => {
     if (options.date) A.budgetFor(options.date);
     else A.dailyBudget();

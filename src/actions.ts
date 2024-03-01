@@ -21,7 +21,7 @@ export function setBalance(amount: string): void {
  */
 export function dailyBudget(): void {
   const today = new Date().getDate();
-  return budgetFor(`${today}`);
+  budgetFor(`${today}`);
 }
 
 /**
