@@ -5,6 +5,7 @@ import { DayOfMonth, date } from "./dates";
 describe("date", () => {
   function isCorrectDate(dayOfMonth: DayOfMonth) {
     const d = date(dayOfMonth);
+    console.log("date:", d)
     const dateString = d.toISOString();
     const dateRegex = /-(\d{2})T/; // Match day
     const match = dateString.match(dateRegex);
