@@ -30,9 +30,9 @@ export function displayBalance(balance: number) {
 
 /**
  * Display how much you can spend and save,
- * given your current `balance` and the day of the month. 
+ * given your current `balance` and the day of the month.
  */
-export function displayBudget(balance: number, dayOfMonth: number) {
+export function displayBudget(balance: number, dayOfMonth: D.DayOfMonth) {
   const budget = dailyBudget(balance, dayOfMonth);
   const overGoal = budget - getDailyGoal();
   console.log(
@@ -50,7 +50,7 @@ export function setDailyGoal(budget: number) {
 /**
  * Get the daily budget.
  */
-function dailyBudget(balance: number, dayOfMonth: number): number {
+function dailyBudget(balance: number, dayOfMonth: D.DayOfMonth): number {
   return balance / D.daysLeftInMonth(dayOfMonth);
 }
 /**
