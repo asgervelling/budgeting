@@ -12,11 +12,10 @@ import * as parse from "./parse";
  * and display it.
  */
 export function setBalance(amount: string): void {
-  const n = Number(amount);
-  const balance = B.getLatestBalance();
-  if (isNaN(n) || n < 0 || !balance) return;
+  const n = parse.nonNegative(amount);
+  if (!n) return;
   B.setBalance(n);
-  B.displayBalance(balance);
+  B.displayBalance(n);
 }
 
 /**
@@ -44,7 +43,7 @@ export function budgetFor(dayOfMonth: string): void {
  * It is used when figuring out how much to save up.
  */
 export function setDailyGoal(amount: string): void {
-  const n = Number(amount);
-  if (isNaN(n) || n < 0) return;
+  const n = parse.nonNegative(amount);
+  if (!n || n < 0) return;
   B.setDailyGoal(Number(amount));
 }

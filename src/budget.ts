@@ -26,7 +26,7 @@ export function setBalance(balance: number): void {
  * showing their balance.
  */
 export function displayBalance(balance: number) {
-  console.log(`Your balance is ${balance}.`);
+  console.log(`Balance:      ${balance}.`);
 }
 
 /**
@@ -35,9 +35,12 @@ export function displayBalance(balance: number) {
  */
 export function displayBudget(balance: number, dayOfMonth: D.DayOfMonth) {
   const budget = dailyBudget(balance, dayOfMonth);
-  const overGoal = budget - getDailyGoal();
+  const goal = getDailyGoal();
+  const overGoal = budget - goal;
   console.log(
-    `Daily budget: ${budget.toFixed(0)} (${overGoal.toFixed(0)} over)`
+    `Daily budget: ${budget.toFixed(0)} ` +
+      `(${overGoal.toFixed(0)} more than ` +
+      `daily goal budget of ${goal})`
   );
 }
 
@@ -60,7 +63,7 @@ function dailyBudget(balance: number, dayOfMonth: D.DayOfMonth): number {
  */
 function getDailyGoal(): number {
   const text = F.read(DataFile.DAILY_GOAL).trim();
-  const goal = parse.naturalNumber(text);
+  const goal = parse.nonNegative(text);
   if (goal) return goal;
   else return 0;
 }
@@ -72,10 +75,11 @@ export function getLatestBalance(): number | null {
   const text = F.read(DataFile.BALANCE);
   const lines = text.trim().split("\n");
   const lastLine = lines[lines.length - 1];
-  if (!lastLine) return null;
+  if (!lastLine) {
+    console.log("No known balance.");
+    return null;
+  }
 
-  const balanceStr = lastLine.split(":")[1];
-  const balance = parseFloat(balanceStr);
-  if (isNaN(balance)) return null;
-  else return balance;
+  const amount = lastLine.split(":")[1];
+  return parse.nonNegative(amount);
 }
