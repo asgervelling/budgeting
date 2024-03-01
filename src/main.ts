@@ -3,38 +3,26 @@ import {
   displayBalance,
   displayBudget,
   getLatestBalance,
-  setBalance,
   setDailyGoal,
 } from "./budget";
+import * as A from "./actions";
 
 const program = new Command();
 
 program
   .command("balance <amount>")
   .description("Enter your current balance")
-  .action((amount) => {
-    setBalance(amount);
-    const balance = getLatestBalance();
-    if (!balance) return;
-    displayBalance(balance);
-  });
+  .action(A.setBalance);
 
 program
   .command("today")
   .description("See your budget for today")
-  .action(() => {
-    const balance = getLatestBalance();
-    if (!balance) return;
-    displayBalance(balance);
-    displayBudget(balance);
-  });
+  .action(A.dailyBudget);
 
 program
   .command("goal <amount>")
   .description("Set your daily goal budget")
-  .action((amount) => {
-    setDailyGoal(amount);
-  });
+  .action(A.setDailyGoal);
 
 program
   .command("date <n>")
