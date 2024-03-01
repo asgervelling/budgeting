@@ -12,6 +12,7 @@ describe("date", () => {
       return false;
     }
     const day = parseInt(match[1], 10);
+    console.log(`${dayOfMonth} === ${day}`);
     return dayOfMonth === day;
   }
   it("should create a date from the dayOfMonth", () => {
