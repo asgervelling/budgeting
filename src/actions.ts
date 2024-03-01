@@ -4,6 +4,9 @@
  * These actions use the file system, print something
  * and return nothing.
  */
+import { pipe } from "fp-ts/function";
+import * as E from "fp-ts/Either";
+
 import * as budget from "./budget";
 import * as parse from "./parse";
 
@@ -12,10 +15,17 @@ import * as parse from "./parse";
  * and display it.
  */
 export function setBalance(amount: string): void {
-  const n = parse.nonNegative(amount);
-  if (!n) return;
-  budget.setBalance(n);
-  budget.displayBalance(n);
+  pipe(
+    amount,
+    parse.nonNegative,
+    E.fold(
+      (error) => console.log(error),
+      (n) => {
+        budget.setBalance(n);
+        budget.displayBalance(n);
+      }
+    )
+  );
 }
 
 /**
@@ -34,7 +44,7 @@ export function budgetFor(dayOfMonth: string): void {
   const day = parse.dayOfMonth(dayOfMonth);
   const balance = budget.getLatestBalance();
   if (!day || !balance) return;
-  console.log("day:", day)
+  console.log("day:", day);
   budget.displayDate(day);
   budget.displayBalance(balance);
   budget.displayBudget(balance, day);
@@ -48,5 +58,5 @@ export function setDailyGoal(amount: string): void {
   const n = parse.nonNegative(amount);
   if (!n) return;
   budget.setDailyGoal(n);
-  console.log(`Set daily goal budget of ${n}.`)
+  console.log(`Set daily goal budget of ${n}.`);
 }
