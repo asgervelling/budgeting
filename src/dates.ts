@@ -14,6 +14,6 @@ function daysInThisMonth() {
  * Get the number of days left in the month,
  * including today.
  */
-export function daysLeftInMonth() {
-  return daysInThisMonth() - new Date().getDate() + 1;
+export function daysLeftInMonth(dayInMonth: number) {
+  return daysInThisMonth() - dayInMonth + 1;
 }

@@ -21,15 +21,15 @@ export function setBalance(balance: number): void {
  * showing their balance.
  */
 export function displayBalance(balance: number) {
-    if (balance) {
+  if (balance) {
     console.log(`Your balance is ${balance}.`);
   } else {
     console.log(`You have not entered a balance.`);
   }
 }
 
-export function displayBudget(balance: number) {
-  const budget = dailyBudget(balance);
+export function displayBudget(balance: number, dayOfMonth: number) {
+  const budget = dailyBudget(balance, dayOfMonth);
   const overGoal = budget - getDailyGoal();
   console.log(
     `Daily budget: ${budget.toFixed(0)} (${overGoal.toFixed(0)} over)`
@@ -40,7 +40,7 @@ export function displayBudget(balance: number) {
  * Simulate using the program at the n'th of the month.
  */
 // export function simulateDate(n: number) {
-//   const budget 
+//   const budget
 // }
 
 /**
@@ -50,11 +50,12 @@ export function setDailyGoal(budget: number) {
   writeFile(DataFile.GOAL, `${budget}`);
 }
 
-function dailyBudget(balance: number): number {
-  if (!balance) return 0;
-  else return balance / D.daysLeftInMonth();
+/**
+ * Get the daily budget.
+ */
+function dailyBudget(balance: number, dayOfMonth: number): number {
+  return balance / D.daysLeftInMonth(dayOfMonth);
 }
-
 /**
  * Get the user's daily goal budget from the file system.
  */

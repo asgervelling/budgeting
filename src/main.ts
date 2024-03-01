@@ -15,18 +15,20 @@ program
   .action(A.setBalance);
 
 program
-  .command("today")
+  .command("budget")
   .description("See your budget for today")
-  .action(A.dailyBudget);
+  .option(
+    "-d, --date <date>",
+    "See the budget for day `n` of the month."
+  )
+  .action((options) => {
+    if (options.date) A.budgetFor(options.date);
+    else A.dailyBudget();
+  });
 
 program
   .command("goal <amount>")
   .description("Set your daily goal budget")
   .action(A.setDailyGoal);
-
-program
-  .command("date <n>")
-  .description("Simulate using the program at the n'th of the month.")
-  .action((n) => {});
 
 program.parse();
