@@ -40,7 +40,7 @@ export function nonNegative(s: string): E.Either<string, number> {
     ),
     E.chain(
       E.fromPredicate(
-        (n) => n < 0,
+        (n) => n >= 0,
         () => "Input must be non-negative"
       )
     )

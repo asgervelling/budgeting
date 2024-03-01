@@ -84,15 +84,28 @@ function getDailyGoal(): number {
 /**
  * Get the latest balance as an option.
  */
-export function getLatestBalance(): E.Either {
-  const text = F.read(DataFile.BALANCE);
-  const lines = text.trim().split("\n");
-  const lastLine = lines[lines.length - 1];
-  if (!lastLine) {
-    console.log("No known balance.");
-    return null;
-  }
-
-  const amount = lastLine.split(":")[1];
-  return parse.nonNegative(amount);
+export function getLatestBalance(): E.Either<string, number> {
+  return pipe(
+    E.tryCatch(
+      () => F.read(DataFile.BALANCE),
+      (error) => `Error reading balance: ${error}`
+    ),
+    E.map((text) => text.trim().split("\n")),
+    E.chain(
+      E.fromPredicate(
+        (lines) => lines.length > 0,
+        () => `Balance not set. Set it with \`./run.sh balance <amount>\``
+      )
+    ),
+    E.map((lines) => lines[lines.length - 1]),
+    E.map((lastLine) => lastLine.split(":")),
+    E.chain(
+      E.fromPredicate(
+        (parts) => parts.length > 0,
+        () => "Malformed balance. Should be `YYYY-MM-DD: <float>`"
+      )
+    ),
+    E.map((parts) => parts[1]),
+    E.chain(parse.nonNegative)
+  );
 }

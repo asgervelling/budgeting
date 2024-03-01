@@ -9,6 +9,7 @@ import * as E from "fp-ts/Either";
 
 import * as budget from "./budget";
 import * as parse from "./parse";
+import { id } from "fp-ts/lib/Refinement";
 
 /**
  * Set your current balance to a natural number,
@@ -41,13 +42,17 @@ export function dailyBudget(): void {
  * @param dayOfMonth A number between 1 and 31.
  */
 export function budgetFor(dayOfMonth: string): void {
-  const day = parse.dayOfMonth(dayOfMonth);
-  const balance = budget.getLatestBalance();
-  if (!day || !balance) return;
-  console.log("day:", day);
-  budget.displayDate(day);
-  budget.displayBalance(balance);
-  budget.displayBudget(balance, day);
+  pipe(
+    E.Do,
+    E.apS("day", parse.dayOfMonth(dayOfMonth)),
+    E.apS("balance", budget.getLatestBalance()),
+    E.map(({ day, balance }) => {
+      budget.displayDate(day);
+      budget.displayBalance(balance);
+      budget.displayBudget(balance, day);
+    }),
+    E.fold((error) => console.log(error), id)
+  );
 }
 
 /**
@@ -55,8 +60,15 @@ export function budgetFor(dayOfMonth: string): void {
  * It is used when figuring out how much to save up.
  */
 export function setDailyGoal(amount: string): void {
-  const n = parse.nonNegative(amount);
-  if (!n) return;
-  budget.setDailyGoal(n);
-  console.log(`Set daily goal budget of ${n}.`);
+  pipe(
+    amount,
+    parse.nonNegative,
+    E.fold(
+      (error) => console.log(error),
+      (goal) => {
+        budget.setDailyGoal(goal);
+        console.log(`Set daily goal budget of ${goal}.`);
+      }
+    )
+  );
 }
