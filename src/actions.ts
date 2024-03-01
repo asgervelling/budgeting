@@ -4,7 +4,7 @@
  * These actions use the file system, print something
  * and return nothing.
  */
-import * as B from "./budget";
+import * as budget from "./budget";
 import * as parse from "./parse";
 
 /**
@@ -14,8 +14,8 @@ import * as parse from "./parse";
 export function setBalance(amount: string): void {
   const n = parse.nonNegative(amount);
   if (!n) return;
-  B.setBalance(n);
-  B.displayBalance(n);
+  budget.setBalance(n);
+  budget.displayBalance(n);
 }
 
 /**
@@ -32,10 +32,12 @@ export function dailyBudget(): void {
  */
 export function budgetFor(dayOfMonth: string): void {
   const day = parse.dayOfMonth(dayOfMonth);
-  const balance = B.getLatestBalance();
+  const balance = budget.getLatestBalance();
   if (!day || !balance) return;
-  B.displayBalance(balance);
-  B.displayBudget(balance, day);
+  console.log("day:", day)
+  budget.displayDate(day);
+  budget.displayBalance(balance);
+  budget.displayBudget(balance, day);
 }
 
 /**
@@ -44,6 +46,7 @@ export function budgetFor(dayOfMonth: string): void {
  */
 export function setDailyGoal(amount: string): void {
   const n = parse.nonNegative(amount);
-  if (!n || n < 0) return;
-  B.setDailyGoal(Number(amount));
+  if (!n) return;
+  budget.setDailyGoal(n);
+  console.log(`Set daily goal budget of ${n}.`)
 }

@@ -19,7 +19,7 @@ export function dayOfMonth(s: string): D.DayOfMonth | null {
 export function nonNegative(s: string): number | null {
   const n = Number(s);
   if (isNaN(n) || n < 0) {
-    console.log(`${n} is not a natural number.`);
+    console.log(`${n} is not a non-negative number.`);
     return null;
   } else {
     return n;

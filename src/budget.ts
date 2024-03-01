@@ -3,7 +3,7 @@ import * as D from "./dates";
 import * as parse from "./parse";
 
 /**
- * Files for storing user state on the file system.
+ * Filenames of the files where we store user state.
  */
 enum DataFile {
   DAILY_GOAL = "goal",
@@ -17,7 +17,7 @@ enum DataFile {
  */
 export function setBalance(balance: number): void {
   if (balance < 0) return;
-  const line = `${D.today()}: ${balance}\n`;
+  const line = `${D.formatDate(D.today())}: ${balance}\n`;
   F.append(DataFile.BALANCE, line);
 }
 
@@ -26,7 +26,7 @@ export function setBalance(balance: number): void {
  * showing their balance.
  */
 export function displayBalance(balance: number) {
-  console.log(`Balance:      ${balance}.`);
+  console.log(`  Set current balance to ${balance}.`);
 }
 
 /**
@@ -38,16 +38,20 @@ export function displayBudget(balance: number, dayOfMonth: D.DayOfMonth) {
   const goal = getDailyGoal();
   const overGoal = budget - goal;
   console.log(
-    `Daily budget: ${budget.toFixed(0)} ` +
+    `  Daily budget: ${budget.toFixed(0)} ` +
       `(${overGoal.toFixed(0)} more than ` +
-      `daily goal budget of ${goal})`
+      `daily goal budget of ${goal}).`
   );
+}
+
+export function displayDate(dayOfMonth: D.DayOfMonth): void {
+  console.log(D.formatDate(D.date(dayOfMonth)));
 }
 
 /**
  * Set the daily goal budget.
  */
-export function setDailyGoal(budget: number) {
+export function setDailyGoal(budget: number): void {
   F.write(DataFile.DAILY_GOAL, `${budget}`);
 }
 

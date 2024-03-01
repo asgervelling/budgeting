@@ -25,3 +25,8 @@ Commands:
   goal <amount>     Set your daily goal budget
   help [command]    display help for command
 ```
+
+### Example
+```
+
+```

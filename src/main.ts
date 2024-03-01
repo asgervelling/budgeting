@@ -26,4 +26,4 @@ program
   .description("Set your daily goal budget")
   .action(A.setDailyGoal);
 
-program.parse();
+program.parse(process.argv);
