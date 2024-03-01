@@ -1,5 +1,6 @@
 import * as F from "./fileio";
 import * as D from "./dates";
+import * as parse from "./parse";
 
 /**
  * Files for storing user state on the file system.
@@ -53,17 +54,15 @@ export function setDailyGoal(budget: number) {
 function dailyBudget(balance: number, dayOfMonth: D.DayOfMonth): number {
   return balance / D.daysLeftInMonth(dayOfMonth);
 }
+
 /**
  * Get the user's daily goal budget from the file system.
  */
 function getDailyGoal(): number {
-  try {
-    const text = F.read(DataFile.DAILY_GOAL).trim();
-    return Number(text);
-  } catch (error) {
-    console.log(error);
-    return 0;
-  }
+  const text = F.read(DataFile.DAILY_GOAL).trim();
+  const goal = parse.naturalNumber(text);
+  if (goal) return goal;
+  else return 0;
 }
 
 /**
