@@ -2,7 +2,7 @@ import { describe, it, expect } from "@jest/globals";
 import { DayOfMonth, date } from "./dates";
 
 describe("date", () => {
-  function isCorrectDate(dayOfMonth: DayOfMonth | 0) {
+  function isCorrectDate(dayOfMonth: DayOfMonth) {
     const d = date(dayOfMonth);
     const dateString = d.toISOString();
     const dateRegex = /-(\d{2})T/; // Match day

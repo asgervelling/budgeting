@@ -31,6 +31,8 @@ export type DayOfMonth =
   | 30
   | 31;
 
+type Month = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+
 /**
  * The current date.
  */
@@ -42,7 +44,7 @@ export function today(): Date {
  * Create a date object of this year,
  * this month and `dayOfMonth`.
  */
-export function date(dayOfMonth: DayOfMonth | 0) {
+export function date(dayOfMonth: DayOfMonth) {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), dayOfMonth + 1);
 }
@@ -55,7 +57,13 @@ export function formatDate(date: Date) {
 }
 
 export function daysInThisMonth() {
-  return date(0).getDate();
+  const now = new Date();
+  return daysInMonth((new Date().getMonth() - 1) as Month);
+}
+
+export function daysInMonth(month: Month) {
+  const now = new Date();
+  return new Date(now.getFullYear(), month, 0).getDate();
 }
 
 /**
