@@ -2,6 +2,9 @@ import { Command } from "commander";
 
 import * as A from "./actions";
 
+/**
+ * A command line program from a package called commander.
+ */
 const program = new Command();
 
 program

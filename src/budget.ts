@@ -15,6 +15,7 @@ enum DataFile {
  * @param balance A natural number.
  */
 export function setBalance(balance: number): void {
+  if (balance < 0) return;
   const line = `${D.today()}: ${balance}\n`;
   F.append(DataFile.BALANCE, line);
 }
