@@ -49,6 +49,5 @@ function createIfNotExists(filename: string): void {
  * `"balance" -> "./data/balance"`
  */
 function path(filename: string): string {
-  console.log("Here:", `${DATA_DIR}/${filename}`)
   return `${DATA_DIR}/${filename}`;
 }
