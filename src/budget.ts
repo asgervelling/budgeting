@@ -1,4 +1,4 @@
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
 import * as E from "fp-ts/Either";
 
 import * as F from "./fileio";
@@ -65,17 +65,23 @@ function dailyBudget(balance: number, dayOfMonth: D.DayOfMonth): number {
   return balance / D.daysLeftInMonth(dayOfMonth);
 }
 
+const notEmpty = flow(
+  E.fromPredicate(
+    (s: string) => s !== "",
+    () => "String is empty"
+  )
+);
+
 /**
  * Get the user's daily goal budget from the file system.
  */
 function getDailyGoal(): number {
-  const text = F.read(DataFile.DAILY_GOAL).trim();
-  const goal = parse.nonNegative(text);
   return pipe(
     E.tryCatch(
       () => F.read(DataFile.DAILY_GOAL).trim(),
       (error) => `Error reading daily goal: ${error}`
     ),
+    E.chain(notEmpty),
     E.chain(parse.nonNegative),
     E.getOrElse(() => 0)
   );
@@ -90,6 +96,7 @@ export function getLatestBalance(): E.Either<string, number> {
       () => F.read(DataFile.BALANCE),
       (error) => `Error reading balance: ${error}`
     ),
+    E.chain(notEmpty),
     E.map((text) => text.trim().split("\n")),
     E.chain(
       E.fromPredicate(
@@ -97,6 +104,10 @@ export function getLatestBalance(): E.Either<string, number> {
         () => `Balance not set. Set it with \`./run.sh balance <amount>\``
       )
     ),
+    E.map((lines) => {
+      console.log(lines);
+      return lines;
+    }),
     E.map((lines) => lines[lines.length - 1]),
     E.map((lastLine) => lastLine.split(":")),
     E.chain(

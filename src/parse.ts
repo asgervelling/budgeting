@@ -7,7 +7,6 @@ import { pipe } from "fp-ts/function";
  * Parse a day of month.
  */
 export function dayOfMonth(s: string): E.Either<string, D.DayOfMonth> {
-  const day = nonNegative(s);
   return pipe(
     s,
     nonNegative,
