@@ -26,7 +26,7 @@ Commands:
   help [command]    display help for command
 ```
 
-### Example 
+### Example
 ```
 $ ./run.sh balance 3456.78
 Balance: 3456.78.
