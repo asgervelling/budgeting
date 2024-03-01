@@ -1,3 +1,6 @@
+import { pipe } from "fp-ts/function";
+import * as E from "fp-ts/Either";
+
 import * as F from "./fileio";
 import * as D from "./dates";
 import * as parse from "./parse";
@@ -68,14 +71,20 @@ function dailyBudget(balance: number, dayOfMonth: D.DayOfMonth): number {
 function getDailyGoal(): number {
   const text = F.read(DataFile.DAILY_GOAL).trim();
   const goal = parse.nonNegative(text);
-  if (goal) return goal;
-  else return 0;
+  return pipe(
+    E.tryCatch(
+      () => F.read(DataFile.DAILY_GOAL).trim(),
+      (error) => `Error reading daily goal: ${error}`
+    ),
+    E.chain(parse.nonNegative),
+    E.getOrElse(() => 0)
+  );
 }
 
 /**
  * Get the latest balance as an option.
  */
-export function getLatestBalance(): number | null {
+export function getLatestBalance(): E.Either {
   const text = F.read(DataFile.BALANCE);
   const lines = text.trim().split("\n");
   const lastLine = lines[lines.length - 1];
