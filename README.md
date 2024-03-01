@@ -1,4 +1,4 @@
-## Daily budget and savings app with TypeScript
+## Daily budget and savings CLI tool with Node
 A command line interface for managing private expenses
 in a spending and a savings account, respectively. \
 You can enter your balance, as well as daily goal budget. \
