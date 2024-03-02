@@ -23,8 +23,6 @@ describe("daysInMonth", () => {
 describe("date", () => {
   function isCorrectDate(dayOfMonth: DayOfMonth) {
     const d = date(dayOfMonth);
-    console.log("date:", d)
-    console.log("machine timezone:", new Date().getTimezoneOffset());
     const dateString = d.toISOString();
     const dateRegex = /-(\d{2})T/; // Match day
     const match = dateString.match(dateRegex);
@@ -32,7 +30,6 @@ describe("date", () => {
       return false;
     }
     const day = parseInt(match[1], 10);
-    console.log(`${dayOfMonth} === ${day}`);
     return dayOfMonth === day;
   }
   it("should create a date from the dayOfMonth", () => {

@@ -46,7 +46,7 @@ export function today(): Date {
  */
 export function date(dayOfMonth: DayOfMonth) {
   const now = new Date();
-  return new Date(now.getUTCFullYear(), now.getUTCMonth(), dayOfMonth + 1);
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), dayOfMonth));
 }
 
 /**
