@@ -70,6 +70,6 @@ export function daysInMonth(year: number, month: Month): number {
  * Get the number of days left in the month,
  * including today.
  */
-export function daysLeftInMonth(dayInMonth: number) {
+export function daysLeftInMonth(dayInMonth: DayOfMonth) {
   return daysInThisMonth() - dayInMonth + 1;
 }

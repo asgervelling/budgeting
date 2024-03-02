@@ -13,6 +13,8 @@ enum DataFile {
   BALANCE = "balance",
 }
 
+const notEmpty = (s: string) => s !== "";
+
 /**
  * Save your current balance in the balance file. \
  * Create that file if it does not exist.
@@ -69,10 +71,6 @@ function dailyBudget(balance: number, dayOfMonth: D.DayOfMonth): number {
  * Get the user's daily goal budget from the file system.
  */
 function getDailyGoal(): number {
-  const notEmpty = E.fromPredicate(
-    (s: string) => s !== "",
-    () => `Daily goal budget not set. Set it with \`./run.sh goal <amount>\``
-  );
   const readGoal = E.tryCatchK(
     () => F.read(DataFile.DAILY_GOAL).trim(),
     (error) => `Error reading daily goal budget: ${error}`
@@ -80,47 +78,46 @@ function getDailyGoal(): number {
 
   return pipe(
     readGoal(),
-    E.chain(notEmpty),
+    E.chain(
+      E.fromPredicate(
+        notEmpty,
+        (error) => `Error reading daily goal budget: ${error}`
+      )
+    ),
     E.chain(parse.nonNegative),
     E.getOrElse(() => 0)
   );
 }
 
-const read = (filename: string) => (msg: string) =>
-  E.tryCatchK(
-    () => F.read(filename).trim(),
-    (error) => `${msg}: ${error}`
-  );
+const readFile = E.tryCatchK(F.read, (error) => `${error}`);
 
 /**
  * Get the latest balance as an option.
  */
 export function getLatestBalance(): E.Either<string, number> {
-  const notEmpty = E.fromPredicate(
-    (s: string) => s !== "",
+  const splitLines = (text: string) => text.trim().split("\n");
+  const getLastLine = (lines: string[]) => lines[lines.length - 1];
+  const splitLine = (line: string) => line.split(":");
+  const getSecondPart = (parts: string[]) => parts[1];
+
+  const validateNonEmpty = E.fromPredicate(
+    notEmpty,
     () => `Balance not set. Set it with \`./run.sh balance <amount>\``
   );
-
-  const readBalance = read(DataFile.BALANCE)(
-    `Balance not set. Set it with \`./run.sh balance <amount>\``
+  const validateFormat = E.fromPredicate(
+    isValidFormat,
+    () => "Malformed balance. Should be `YYYY-MM-DD: <float>`"
   );
-  // const readBalance = (msg: string) => read(DataFile.BALANCE)
-
-  const x = read(DataFile.BALANCE)("msg");
 
   return pipe(
-    readBalance(),
-    E.chain(notEmpty),
-    E.map((text) => text.trim().split("\n")),
-    E.map((lines) => lines[lines.length - 1]),
-    E.chain(
-      E.fromPredicate(
-        (line) => isValidFormat(line),
-        () => "Malformed balance. Should be `YYYY-MM-DD: <float>`"
-      )
-    ),
-    E.map((lastLine) => lastLine.split(":")),
-    E.map((parts) => parts[1]),
+    DataFile.BALANCE,
+    readFile,
+    E.chain(validateNonEmpty),
+    E.map(splitLines),
+    E.map(getLastLine),
+    E.chain(validateFormat),
+    E.map(splitLine),
+    E.map(getSecondPart),
     E.chain(parse.nonNegative)
   );
 }
