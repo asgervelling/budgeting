@@ -14,16 +14,14 @@ import * as parse from "./parse";
  * Set your current balance to a natural number,
  * and display it.
  */
-export function setBalance(amount: string): void {
+export function setBalance(amount: string): void {  
   pipe(
     amount,
     parse.nonNegative,
+    E.chain(budget.setBalance),
     E.fold(
       (error) => console.log(error),
-      (n) => {
-        budget.setBalance(n);
-        budget.displayBalance(n);
-      }
+      (goal) => console.log(`Daily goal budget: ${goal}`)
     )
   );
 }
@@ -62,12 +60,10 @@ export function setDailyGoal(amount: string): void {
   pipe(
     amount,
     parse.nonNegative,
+    E.chain(budget.setDailyGoal),
     E.fold(
       (error) => console.log(error),
-      (goal) => {
-        budget.setDailyGoal(goal);
-        console.log(`Daily goal budget: ${goal}.`);
-      }
+      (goal) => console.log(`Daily goal budget: ${goal}`)
     )
   );
 }
