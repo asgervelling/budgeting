@@ -46,7 +46,7 @@ export function today(): Date {
  */
 export function date(dayOfMonth: DayOfMonth) {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), dayOfMonth + 1);
+  return new Date(now.getUTCFullYear(), now.getUTCMonth(), dayOfMonth + 1);
 }
 
 /**
@@ -56,14 +56,14 @@ export function formatDate(date: Date) {
   return date.toISOString().split("T")[0];
 }
 
-export function daysInThisMonth() {
+export function daysInThisMonth(): number {
   const now = new Date();
-  return daysInMonth((new Date().getMonth() - 1) as Month);
+  return daysInMonth(now.getUTCFullYear(), (now.getUTCMonth() - 1) as Month);
 }
 
-export function daysInMonth(month: Month) {
-  const now = new Date();
-  return new Date(now.getFullYear(), month, 0).getDate();
+export function daysInMonth(year: number, month: Month): number {
+  const day = 1;
+  return new Date(year, month, day).getUTCDate();
 }
 
 /**

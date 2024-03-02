@@ -33,7 +33,7 @@ export function setBalance(amount: string): void {
  * See your budget for today.
  */
 export function dailyBudget(): void {
-  const today = new Date().getDate();
+  const today = new Date().getUTCDate();
   budgetFor(`${today}`);
 }
 
