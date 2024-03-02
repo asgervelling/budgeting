@@ -62,8 +62,8 @@ export function daysInThisMonth(): number {
 }
 
 export function daysInMonth(year: number, month: Month): number {
-  const day = 1;
-  return new Date(year, month, day).getUTCDate();
+  const day = 0;
+  return new Date(Date.UTC(year, month, day)).getUTCDate();
 }
 
 /**
