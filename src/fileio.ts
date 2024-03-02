@@ -4,11 +4,7 @@
  * All the functions here make the data directory
  * if it does not exist.
  */
-import { pipe } from "fp-ts/function";
-import * as E from "fp-ts/Either";
-
 import * as fs from "fs";
-import { id } from "fp-ts/lib/Refinement";
 
 const DATA_DIR = "./data";
 

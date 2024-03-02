@@ -9,7 +9,6 @@ import * as E from "fp-ts/Either";
 
 import * as budget from "./budget";
 import * as parse from "./parse";
-import { id } from "fp-ts/lib/Refinement";
 
 /**
  * Set your current balance to a natural number,
@@ -51,7 +50,7 @@ export function budgetFor(dayOfMonth: string): void {
       budget.displayBalance(balance);
       budget.displayBudget(balance, day);
     }),
-    E.fold((error) => console.log(error), id)
+    E.mapLeft(console.log)
   );
 }
 
