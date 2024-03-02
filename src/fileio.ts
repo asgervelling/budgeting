@@ -5,31 +5,47 @@
  * if it does not exist.
  */
 import * as fs from "fs";
+import * as E from "fp-ts/Either";
 
 const DATA_DIR = "./data";
 
 /**
  * Read file and create if not exists.
  */
-export function read(filename: string): string {
+export function read(filename: string): () => E.Either<string, string> {
   createIfNotExists(filename);
-  return fs.readFileSync(path(filename), "utf-8");
+  return E.tryCatchK(
+    () => fs.readFileSync(path(filename), "utf-8"),
+    (error) => `${error}`
+  );
 }
 
 /**
  * Write `data` to the a file.
  */
-export function write(filename: string, data: string): void {
+export function write(
+  filename: string,
+  data: string
+): () => E.Either<string, void> {
   createIfNotExists(filename);
-  fs.writeFileSync(path(filename), data);
+  return E.tryCatchK(
+    () => fs.writeFileSync(path(filename), data),
+    (error) => `${error}`
+  );
 }
 
 /**
  * Append `data` to the a file.
  */
-export function append(filename: string, data: string): void {
+export function append(
+  filename: string,
+  data: string
+): () => E.Either<string, void> {
   createIfNotExists(filename);
-  fs.appendFileSync(path(filename), data);
+  return E.tryCatchK(
+    () => fs.appendFileSync(path(filename), data),
+    (error) => `${error}`
+  );
 }
 
 function mkdirIfNotExists(dir: string): void {
