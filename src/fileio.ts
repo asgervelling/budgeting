@@ -6,15 +6,16 @@
  */
 import * as fs from "fs";
 import * as E from "fp-ts/Either";
+import { flow } from "fp-ts/lib/function";
 
 const DATA_DIR = "./data";
 
 /**
  * Read file and create if not exists.
  */
-export function read(filename: string): () => E.Either<string, string> {
+export function read(filename: string): E.Either<string, string> {
   createIfNotExists(filename);
-  return E.tryCatchK(
+  return E.tryCatch(
     () => fs.readFileSync(path(filename), "utf-8"),
     (error) => `${error}`
   );
@@ -26,9 +27,9 @@ export function read(filename: string): () => E.Either<string, string> {
 export function write(
   filename: string,
   data: string
-): () => E.Either<string, void> {
+): E.Either<string, void> {
   createIfNotExists(filename);
-  return E.tryCatchK(
+  return E.tryCatch(
     () => fs.writeFileSync(path(filename), data),
     (error) => `${error}`
   );
